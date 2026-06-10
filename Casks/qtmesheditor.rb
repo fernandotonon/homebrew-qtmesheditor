@@ -1,6 +1,6 @@
 cask 'qtmesheditor' do
-  version '3.5.0'
-  sha256 '2d9da832317a4f1d51644c0667d1c13c7999de895629d7c0aecdcb6e187d9078'
+  version '3.5.1'
+  sha256 '711fb922abdff1579f2abac283faa17d570622fe112156447e09c2462093a854'
 
   url "https://github.com/fernandotonon/QtMeshEditor/releases/download/#{version}/QtMeshEditor-#{version}-MacOS.dmg"
   name 'QtMeshEditor'
@@ -62,3 +62,8 @@ cask 'qtmesheditor' do
     '~/Library/Saved Application State/com.qtmesheditor.QtMeshEditor.savedState',
   ]
 end
+
+  postflight do
+    system_command "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
+      args: ["-f", "-R", "#{appdir}/QtMeshEditor.app"]
+  end
