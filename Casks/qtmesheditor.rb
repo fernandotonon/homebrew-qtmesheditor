@@ -1,69 +1,58 @@
-cask 'qtmesheditor' do
-  version '3.5.2'
-  sha256 '245878fa71a02ab99c2b4a00a8ea9c74b1b9c1018419de31458dd665fa4a90d1'
+cask "qtmesheditor" do
+  version "3.5.2"
+  sha256 "245878fa71a02ab99c2b4a00a8ea9c74b1b9c1018419de31458dd665fa4a90d1"
 
   url "https://github.com/fernandotonon/QtMeshEditor/releases/download/#{version}/QtMeshEditor-#{version}-MacOS.dmg"
-  name 'QtMeshEditor'
-  desc 'Qt-based Ogre3D Mesh Editor with AI-enhanced Material Editor'
-  homepage 'https://github.com/fernandotonon/QtMeshEditor'
+  name "QtMeshEditor"
+  desc "Qt-based Ogre3D Mesh Editor with AI-enhanced Material Editor"
+  homepage "https://github.com/fernandotonon/QtMeshEditor"
 
   livecheck do
     url :url
     strategy :github_latest
   end
 
-  app 'QtMeshEditor.app'
+  app "QtMeshEditor.app"
 
-  # CLI access: create symlinks in /usr/local/bin
-  binary "#{appdir}/QtMeshEditor.app/Contents/MacOS/QtMeshEditor", target: 'qtmesheditor'
+  # CLI access: GUI launcher + the `qtmesh` pipeline alias.
+  binary "#{appdir}/QtMeshEditor.app/Contents/MacOS/QtMeshEditor", target: "qtmesheditor"
+  binary "#{appdir}/QtMeshEditor.app/Contents/MacOS/QtMeshEditor", target: "qtmesh"
 
-  # Temporary workaround for architecture compatibility issues
+  # A single postflight block: Homebrew allows only one, and it must live INSIDE
+  # the cask. (A stray second `postflight do...end` appended after the cask's
+  # closing `end` is parsed as a top-level call and breaks every install with
+  # "undefined method 'postflight'" — #718.)
   postflight do
-    # Remove quarantine attribute that may cause "not supported on this mac" errors
+    # Clear quarantine so the app isn't blocked as "not supported on this mac".
     system_command "/usr/bin/xattr",
                    args: ["-rd", "com.apple.quarantine", "#{appdir}/QtMeshEditor.app"],
                    sudo: false
-
-    # Create qtmesh symlink for CLI pipeline usage
-    target_dir = "#{HOMEBREW_PREFIX}/bin"
-    qtmesh_link = "#{target_dir}/qtmesh"
-    File.delete(qtmesh_link) if File.symlink?(qtmesh_link)
-    File.symlink("#{appdir}/QtMeshEditor.app/Contents/MacOS/QtMeshEditor", qtmesh_link)
+    # Register the bundle so Finder picks up CFBundleDocumentTypes without a
+    # reboot (#664).
+    system_command "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
+                   args: ["-f", "-R", "#{appdir}/QtMeshEditor.app"],
+                   sudo: false
   end
 
-  uninstall_postflight do
-    qtmesh_link = "#{HOMEBREW_PREFIX}/bin/qtmesh"
-    File.delete(qtmesh_link) if File.symlink?(qtmesh_link)
-  end
+  caveats <<~EOS
+    CLI commands are now available:
+      qtmesheditor    # Launch the GUI
+      qtmesh          # CLI pipeline (info, convert, fix, scan, etc.)
 
-  caveats do
-    <<~EOS
-      CLI commands are now available:
-        qtmesheditor    # Launch the GUI
-        qtmesh          # CLI pipeline (info, convert, fix, scan, etc.)
+    Example:
+      qtmesh info model.fbx --json
+      qtmesh scan ./assets --fail-on warning
 
-      Example:
-        qtmesh info model.fbx --json
-        qtmesh scan ./assets --fail-on warning
+    If you encounter a "not supported on this mac" error, allow the app in
+    System Settings > Privacy & Security, then reopen it. Report issues at:
+    https://github.com/fernandotonon/QtMeshEditor/issues
+  EOS
 
-      If you encounter "not supported on this mac" error:
-      
-      1. For Apple Silicon Macs, try running with Rosetta:
-         arch -x86_64 /Applications/QtMeshEditor.app/Contents/MacOS/QtMeshEditor
-      
-      2. You may need to allow the app in System Preferences > Security & Privacy
-      
-      3. If issues persist, please report at: https://github.com/fernandotonon/QtMeshEditor/issues
-    EOS
-  end
-
+  # QSettings writes under the "none" org domain (QCoreApplication
+  # setOrganizationDomain("none")), so the prefs file is com.none.QtMeshEditor.
   zap trash: [
-    '~/Library/Preferences/com.qtmesheditor.QtMeshEditor.plist',
-    '~/Library/Saved Application State/com.qtmesheditor.QtMeshEditor.savedState',
+    "~/Library/Preferences/com.none.QtMeshEditor.plist",
+    "~/Library/Preferences/QtMeshEditor",
+    "~/Library/Saved Application State/com.none.QtMeshEditor.savedState",
   ]
 end
-
-  postflight do
-    system_command "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister",
-      args: ["-f", "-R", "#{appdir}/QtMeshEditor.app"]
-  end
