@@ -1,6 +1,6 @@
 cask "qtmesheditor" do
-  version "3.41.0"
-  sha256 "46c752c21b05b4f37bff9e4b7a41086b94b289c3102d6af8d897bc20993db7df"
+  version "3.41.1"
+  sha256 "d9f194db96ec9fbb0e589bae4663b8160fa436013e9169e27c220c0e15fea3a4"
 
   url "https://github.com/fernandotonon/QtMeshEditor/releases/download/#{version}/QtMeshEditor-#{version}-MacOS.dmg"
   name "QtMeshEditor"
