@@ -1,6 +1,6 @@
 cask "qtmesheditor" do
-  version "character-assets-v1"
-  sha256 "c96b05a156fd8f828f02edcd3ec43d0903efbfd9266fd44fa144d936bbe9b588"
+  version "3.58.1"
+  sha256 "07a36bb2c49f2401149e2884d96809534fec8efe2389e3ff072c2bc2decf5246"
 
   url "https://github.com/fernandotonon/QtMeshEditor/releases/download/#{version}/QtMeshEditor-#{version}-MacOS.dmg"
   name "QtMeshEditor"
