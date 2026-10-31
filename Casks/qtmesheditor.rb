@@ -1,6 +1,6 @@
 cask "qtmesheditor" do
-  version "3.59.0"
-  sha256 "df1434c4ae7b8b757e18f76c4bfacfe15d1b9c36aa9797f3269678a5cf52678f"
+  version "3.60.0"
+  sha256 "eabbedc659357a6ff00462ed061e4319865ea7ae44223f097f8346d6e2ab7415"
 
   url "https://github.com/fernandotonon/QtMeshEditor/releases/download/#{version}/QtMeshEditor-#{version}-MacOS.dmg"
   name "QtMeshEditor"
@@ -11,6 +11,9 @@ cask "qtmesheditor" do
     url :url
     strategy :github_latest
   end
+
+  # ONNX Runtime 1.31 (linked at launch) needs macOS 14; Info.plist gates the same.
+  depends_on macos: ">= :sonoma"
 
   app "QtMeshEditor.app"
 
