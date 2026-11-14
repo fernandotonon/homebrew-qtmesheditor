@@ -1,9 +1,9 @@
 cask "qtmesheditor" do
-  version "3.68.0"
-  sha256 "ffb30a0caca9a630b56e7bcc255eeeeca3a46cf3a6632f20522cfff32713acc3"
+  version "3.69.0"
+  sha256 "ae22de0f4c50df5c51adfa488138e3e9345ec4e5da3fdb1d636feea0e5d047b3"
 
   url "https://github.com/fernandotonon/QtMeshEditor/releases/download/#{version}/QtMeshEditor-#{version}-MacOS.dmg"
-  name "QtMeshEditor"
+  name "QtMesh Editor"
   desc "Qt-based Ogre3D Mesh Editor with AI-enhanced Material Editor"
   homepage "https://github.com/fernandotonon/QtMeshEditor"
 
